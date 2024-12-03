@@ -19,15 +19,18 @@ current_regimen = st.selectbox("Current ART Regimen", options=["Regimen A", "Reg
 
 # Button to make prediction
 if st.button("Predict"):
-    # Convert inputs to a DataFrame
-    input_data = pd.DataFrame([[age, 1 if sex == "Male" else 0, weight, height, who_stage, current_regimen]], 
-                              columns=['age', 'sex', 'weight', 'height', 'stage', 'regimen'])
+    # Convert inputs to the required format (as a numpy array)
+    input_data = np.array([[age, 1 if sex == "Male" else 0, weight, height, who_stage, current_regimen]])
 
-    # Apply one-hot encoding to the 'stage' and 'regimen' columns
+    # Convert input_data into a DataFrame
+    input_data = pd.DataFrame(input_data, columns=['age', 'sex', 'weight', 'height', 'stage', 'regimen'])
+
+    # Apply one-hot encoding to the 'stage' column (and 'regimen' if necessary)
     input_data = pd.get_dummies(input_data, columns=['stage', 'regimen'], drop_first=True)
-    
-    # Ensure the input data has the same feature columns as the model expects
-    # For instance, if the model expects additional features that are not in input_data, you should add those here.
+
+    # Ensure input_data matches the model's input shape
+    # You may need to ensure that the columns in input_data match exactly what the model expects
+    # For example, if the model was trained on specific feature columns, make sure they are present in input_data
 
     # Make prediction
     prediction = model.predict(input_data)
@@ -37,4 +40,3 @@ if st.button("Predict"):
         st.success("Viral Load is Suppressed (LDL)")
     else:
         st.error("Viral Load is Detectable")
-
